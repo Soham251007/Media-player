@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Media player</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <div class="container">
+    <header>
+      <h1>Media Player</h1>
+    </header>
+  </div>
+  <body>
+    <script>
+      
+      document.addEventListener("DOMContentLoaded", () => {
+        const mediaPlayer = document.querySelector("#media-player");
+        const playlistItems = document.querySelectorAll(".playlist ul li");
+
+       
+        const playMedia = (source) => {
+          mediaPlayer.src = source; 
+          mediaPlayer.play();
+        };
+
+       
+        playlistItems.forEach((item) => {
+          item.addEventListener("click", () => {
+            const mediaSource = item.getAttribute("data-src"); 
+            playMedia(mediaSource);
+            highlightActive(item); 
+          });
+        });
+
+        
+        const highlightActive = (activeItem) => {
+          playlistItems.forEach((item) => item.classList.remove("active"));
+          activeItem.classList.add("active");
+        };
+      });
+    </script>
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+          const mediaPlayer = document.querySelector("#media-player");
+          const playButton = document.querySelector("#play-btn");
+          const pauseButton = document.querySelector("#pause-btn");
+          const nextButton = document.querySelector("#next-btn");
+          const playlistItems = document.querySelectorAll(".playlist ul li");
+  
+          let currentIndex = 0; 
+          let trackElement = document.createElement("track"); 
+          trackElement.kind = "subtitles";
+          trackElement.label = "English";
+          trackElement.srclang = "en";
+          mediaPlayer.appendChild(trackElement); 
+  
+         
+          const playMedia = (source, subtitle) => {
+              if (!source) {
+                  console.error("No source provided for the media.");
+                  return;
+              }
+              mediaPlayer.src = source; 
+              trackElement.src = subtitle; 
+              mediaPlayer.play()
+                  .then(() => console.log(`Playing: ${source} with subtitles: ${subtitle}`))
+                  .catch((err) => console.error("Error playing media:", err));
+          };
+  
+          
+          const highlightActive = (index) => {
+              playlistItems.forEach((item, idx) => {
+                  item.classList.toggle("active", idx === index);
+              });
+          };
+  
+          
+          playButton.addEventListener("click", () => {
+              if (mediaPlayer.paused) {
+                  mediaPlayer.play()
+                      .then(() => console.log("Media resumed"))
+                      .catch((err) => console.error("Error playing media:", err));
+              }
+          });
+  
+          
+          pauseButton.addEventListener("click", () => {
+              if (!mediaPlayer.paused) {
+                  mediaPlayer.pause();
+                  console.log("Media paused");
+              }
+          });
+  
+          
+          nextButton.addEventListener("click", () => {
+              currentIndex = (currentIndex + 1) % playlistItems.length; 
+              const nextItem = playlistItems[currentIndex];
+              const mediaSource = nextItem.getAttribute("data-src");
+              const subtitleSource = nextItem.getAttribute("data-subtitle");
+              playMedia(mediaSource, subtitleSource);
+              highlightActive(currentIndex);
+          });
+  
+         
+          playlistItems.forEach((item, index) => {
+              item.addEventListener("click", () => {
+                  const mediaSource = item.getAttribute("data-src");
+                  const subtitleSource = item.getAttribute("data-subtitle");
+                  if (mediaSource) {
+                      currentIndex = index;
+                      playMedia(mediaSource, subtitleSource);
+                      highlightActive(index);
+                  } else {
+                      console.error("data-src or data-subtitle attribute is missing or invalid.");
+                  }
+              });
+          });
+  
+          
+          if (playlistItems.length > 0) {
+              highlightActive(currentIndex);
+              const initialSource = playlistItems[currentIndex].getAttribute("data-src");
+              const initialSubtitle = playlistItems[currentIndex].getAttribute("data-subtitle");
+              playMedia(initialSource, initialSubtitle);
+          }
+      });
+  </script>
+    
+    <div class="container">
+        <div class="media-player">
+            <video id="media-player" controls>
+              Your browser dosen't seem to support this
+            </video>
+            <div class="controls">
+              <button id="play-btn">Play</button>
+              <button id="pause-btn">Pause</button>
+              <button id="next-btn">Next</button>
+            </div>
+          </div>
+
+    </div>
+    <div class="container">
+      <div class="playlist">
+        <ul>
+          <li data-src="Source to you media file" data-subtitle="source to your subtitle file"><span>Solo leveling</span></li>
+          <li data-src="Source to your media file" data-subtitle="source to your subtitle file"><span>Yea</span></li>
+        </ul>
+      </div>
+    </div>
+  </body>
+</html>
